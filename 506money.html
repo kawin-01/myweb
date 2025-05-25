@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เงินห้องนักเรียนชั้น ม.5/6</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d5a27 0%, #68b21f 50%, #ffd700 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2d5a27 0%, #68b21f 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .admin-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 15px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-switch.active {
+            background: #ffd700;
+        }
+        
+        .toggle-switch::after {
+            content: '👤';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            transition: left 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+        
+        .toggle-switch.active::after {
+            left: 27px;
+            content: '⚙️';
+        }
+        
+        .admin-panel {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: none;
+        }
+        
+        .admin-panel input {
+            padding: 8px 12px;
+            border: 2px solid #68b21f;
+            border-radius: 5px;
+            margin-right: 10px;
+            outline: none;
+        }
+        
+        .admin-panel button {
+            background: #68b21f;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #68b21f 0%, #2d5a27 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(104, 178, 31, 0.3);
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .summary-card h3 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .summary-card .amount {
+            font-size: 2.2em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            padding: 30px;
+        }
+        
+        .student-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-left: 5px solid #68b21f;
+            transition: all 0.3s ease;
+        }
+        
+        .student-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+        
+        .student-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #68b21f 0%, #2d5a27 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        
+        .money-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .money-label {
+            font-weight: 600;
+            color: #333;
+            min-width: 80px;
+        }
+        
+        .money-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .money-amount {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2d5a27;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #68b21f 0%, #2d5a27 100%);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(104, 178, 31, 0.3);
+        }
+        
+        .control-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(104, 178, 31, 0.4);
+        }
+        
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .loan-input {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 1em;
+            text-align: center;
+            width: 100px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .loan-input:focus {
+            outline: none;
+            border-color: #68b21f;
+            box-shadow: 0 0 0 3px rgba(104, 178, 31, 0.1);
+        }
+        
+        .paid-row {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+        }
+        
+        .debt-row {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        }
+        
+        .loan-row {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .admin-toggle {
+                position: static;
+                justify-content: center;
+                margin-top: 15px;
+            }
+            
+            .students-grid {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+            
+            .summary-cards {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 15px;
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 เงินห้องนักเรียนชั้น ม.5/6</h1>
+            
+            <div class="admin-toggle" onclick="toggleAdmin()">
+                <span>ผู้ดูแล</span>
+                <div class="toggle-switch" id="adminToggle"></div>
+            </div>
+            
+            <div class="admin-panel" id="adminPanel">
+                <input type="password" id="adminPassword" placeholder="รหัสผ่าน">
+                <button onclick="checkAdminPassword()">เข้าสู่ระบบ</button>
+            </div>
+        </div>
+        
+        <div class="summary-cards">
+            <div class="summary-card">
+                <h3>💵 เงินรวม</h3>
+                <div class="amount" id="totalPaid">0 ฿</div>
+            </div>
+            <div class="summary-card">
+                <h3>⏰ เงินที่ค้างจ่ายรวม</h3>
+                <div class="amount" id="totalDebt">0 ฿</div>
+            </div>
+            <div class="summary-card">
+                <h3>🏦 เงินกู้รวม</h3>
+                <div class="amount" id="totalLoan">0 ฿</div>
+            </div>
+        </div>
+        
+        <div class="students-grid" id="studentsGrid">
+        </div>
+    </div>
+
+    <script>
+        let isAdmin = false;
+        const adminPassword = "admin123";
+        
+        // ข้อมูลนักเรียน 40 คน
+        let students = [];
+        for (let i = 1; i <= 40; i++) {
+            students.push({
+                number: i,
+                paid: 0,
+                debt: 0,
+                loan: 0
+            });
+        }
+        
+        function toggleAdmin() {
+            const toggle = document.getElementById('adminToggle');
+            const panel = document.getElementById('adminPanel');
+            
+            if (!isAdmin) {
+                panel.style.display = 'block';
+            } else {
+                isAdmin = false;
+                toggle.classList.remove('active');
+                panel.style.display = 'none';
+                renderStudents();
+            }
+        }
+        
+        function checkAdminPassword() {
+            const password = document.getElementById('adminPassword').value;
+            const toggle = document.getElementById('adminToggle');
+            const panel = document.getElementById('adminPanel');
+            
+            if (password === adminPassword) {
+                isAdmin = true;
+                toggle.classList.add('active');
+                panel.style.display = 'none';
+                document.getElementById('adminPassword').value = '';
+                renderStudents();
+                showNotification('เข้าสู่โหมดผู้ดูแลสำเร็จ! 🎉');
+            } else {
+                showNotification('รหัสผ่านไม่ถูกต้อง! ❌');
+            }
+        }
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #68b21f;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                z-index: 1000;
+                font-weight: 600;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        function adjustMoney(studentIndex, type, amount) {
+            if (!isAdmin) return;
+            
+            students[studentIndex][type] = Math.max(0, students[studentIndex][type] + amount);
+            updateSummary();
+            renderStudents();
+        }
+        
+        function updateLoan(studentIndex, value) {
+            if (!isAdmin) return;
+            
+            students[studentIndex].loan = Math.max(0, parseInt(value) || 0);
+            updateSummary();
+        }
+        
+        function updateSummary() {
+            const totalPaid = students.reduce((sum, student) => sum + student.paid, 0);
+            const totalDebt = students.reduce((sum, student) => sum + student.debt, 0);
+            const totalLoan = students.reduce((sum, student) => sum + student.loan, 0);
+            
+            document.getElementById('totalPaid').textContent = totalPaid.toLocaleString() + ' ฿';
+            document.getElementById('totalDebt').textContent = totalDebt.toLocaleString() + ' ฿';
+            document.getElementById('totalLoan').textContent = totalLoan.toLocaleString() + ' ฿';
+        }
+        
+        function renderStudents() {
+            const grid = document.getElementById('studentsGrid');
+            grid.innerHTML = '';
+            
+            students.forEach((student, index) => {
+                const card = document.createElement('div');
+                card.className = 'student-card fade-in';
+                
+                card.innerHTML = `
+                    <div class="student-number">เลขที่ ${student.number}</div>
+                    
+                    <div class="money-row paid-row">
+                        <span class="money-label">จ่ายแล้ว</span>
+                        <div class="money-controls">
+                            ${isAdmin ? `<button class="control-btn" onclick="adjustMoney(${index}, 'paid', -5)">−</button>` : ''}
+                            <span class="money-amount">${student.paid.toLocaleString()} ฿</span>
+                            ${isAdmin ? `<button class="control-btn" onclick="adjustMoney(${index}, 'paid', 5)">+</button>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="money-row debt-row">
+                        <span class="money-label">ค้างเงิน</span>
+                        <div class="money-controls">
+                            ${isAdmin ? `<button class="control-btn" onclick="adjustMoney(${index}, 'debt', -5)">−</button>` : ''}
+                            <span class="money-amount">${student.debt.toLocaleString()} ฿</span>
+                            ${isAdmin ? `<button class="control-btn" onclick="adjustMoney(${index}, 'debt', 5)">+</button>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="money-row loan-row">
+                        <span class="money-label">กู้ยืม</span>
+                        <div class="money-controls">
+                            ${isAdmin ? 
+                                `<input type="number" class="loan-input" value="${student.loan}" 
+                                  onchange="updateLoan(${index}, this.value)" placeholder="0">` :
+                                `<span class="money-amount">${student.loan.toLocaleString()} ฿</span>`
+                            }
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // เริ่มต้นโปรแกรม
+        function init() {
+            updateSummary();
+            renderStudents();
+        }
+        
+        // เรียกใช้เมื่อโหลดหน้าเว็บ
+        window.onload = init;
+    </script>
+</body>
+</html>
